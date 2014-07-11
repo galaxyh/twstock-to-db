@@ -12,5 +12,6 @@ CREATE TABLE `DAILY_TRADE` (
   `FII_CAPITAL` bigint(20) DEFAULT NULL COMMENT 'Foreign Investment Institution capital',
   `DI_CAPITAL` bigint(20) DEFAULT NULL COMMENT 'Domestic Institution capital',
   `DEALER_CAPITAL` bigint(20) DEFAULT NULL COMMENT 'Dealer capital',
-  PRIMARY KEY (`ID`,`TRADE_DATE`)
+  `PER` decimal(7,2) unsigned DEFAULT NULL COMMENT 'Price Earning Ratio',
+  PRIMARY KEY (`ID`,`TRADE_DATE`,`TYPE`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
