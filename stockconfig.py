@@ -48,6 +48,15 @@ def load(filename=DEFAULT_CONFIG_FILENAME):
     if p['otc.isUpdateDb'].strip() !='false':
         p['otc.isUpdateDb'] = 'true'
 
+    if not p['db.server'].strip():
+        p['db.server'] = 'SERVER_NAME'
+    if not p['db.username'].strip():
+        p['db.username'] = 'USERNAME'
+    if not p['db.password'].strip():
+        p['db.password'] = 'PASSWORD'
+    if not p['db.database'].strip():
+        p['db.database'] = 'DATABASE_NAME'
+
     return p
 
 def save(config, filename=DEFAULT_CONFIG_FILENAME):

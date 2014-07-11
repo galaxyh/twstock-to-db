@@ -51,3 +51,9 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+
+# twstock download folders
+price_listed/
+price_otc/
+inst_listed/
+inst_otc/

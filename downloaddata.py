@@ -1,9 +1,13 @@
+import os
 import datetime
 import stockconfig
 from urllib import urlretrieve
 
 # Listed companies URLs
-# Example: http://www.twse.com.tw/ch/trading/fund/T86/print.php?edition=ch&filename=genpage/201406/20140615_2by_stkno.dat&type=csv&select2=ALL
+# Price Example: http://www.twse.com.tw/ch/trading/exchange/MI_INDEX/MI_INDEX3_print.php?genpage=genpage/Report201407/A11220140709ALLBUT0999_1.php&type=csv
+PRICE_LISTED_URL = 'http://www.twse.com.tw/ch/trading/exchange/MI_INDEX/MI_INDEX3_print.php?genpage=genpage/Report%s/A112%sALLBUT0999_1.php&type=csv'
+
+# Institution Example: http://www.twse.com.tw/ch/trading/fund/T86/print.php?edition=ch&filename=genpage/201406/20140615_2by_stkno.dat&type=csv&select2=ALL
 INST_LISTED_URL = 'http://www.twse.com.tw/ch/trading/fund/T86/print.php?edition=ch&filename=genpage/%s/%s_2by_stkno.dat&type=csv&select2=ALL'
 
 # Over the counter companies URLs
@@ -14,6 +18,18 @@ PRICE_OTC_URL = 'http://www.gretai.org.tw/web/stock/aftertrading/daily_close_quo
 INST_OTC_URL = 'http://www.gretai.org.tw/ch/stock/3insti/DAILY_TradE/3itrade_download.php?t=D&d=%s&s=0,asc,0'
 
 p = stockconfig.load()
+
+# Create download folders
+if not os.path.exists(p['listed.pricePath']):
+    os.makedirs(p['listed.pricePath'])
+if not os.path.exists(p['listed.instPath']):
+    os.makedirs(p['listed.instPath'])
+if not os.path.exists(p['otc.pricePath']):
+    os.makedirs(p['otc.pricePath'])
+if not os.path.exists(p['otc.instPath']):
+    os.makedirs(p['otc.instPath'])
+
+# Get last download date
 lastdownload = p['listed.lastDownload'].strip().split('-')
 listedlast = datetime.date(int(lastdownload[0]), int(lastdownload[1]), int(lastdownload[2])) + datetime.timedelta(1)
 lastdownload = p['otc.lastDownload'].strip().split('-')
@@ -31,12 +47,14 @@ if p['listed.isDownload'] != 'false':
     print '\tDownloading listed companies data...'
     lastdate = listedlast
     while lastdate < today:
+        price_url = PRICE_LISTED_URL % (lastdate.strftime('%Y%m'), lastdate.strftime('%Y%m%d'))
         inst_url = INST_LISTED_URL % (lastdate.strftime('%Y%m'), lastdate.strftime('%Y%m%d'))
 
         tradedate = lastdate.strftime('%Y-%m-%d')
         print '\tDate: ' + tradedate
 
         try:
+            urlretrieve(price_url, p['listed.pricePath'] + '/' + tradedate + '.csv')
             urlretrieve(inst_url, p['listed.instPath'] + '/' + tradedate + '.csv')
         except IOError as e:
             print '[ERROR] I/O error({0}): {1}'.format(e.errno, e.strerror)
@@ -75,4 +93,5 @@ if p['otc.isDownload'] != 'false':
         stockconfig.save(p)
         lastdate = lastdate + datetime.timedelta(1)
 
+stockconfig.save(p)
 print '[DONE]'
