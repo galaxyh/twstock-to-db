@@ -11,7 +11,7 @@ DEFAULT_OTC_PRICE_PATH = 'price_otc'
 DEFAULT_OTC_INST_PATH = 'inst_otc'
 
 # The default date of the latest data processed
-DEFAULT_START_DATE = '2011-12-31'
+DEFAULT_START_DATE = '2004-02-10'
 
 def load(filename=DEFAULT_CONFIG_FILENAME):
     p = Properties()
