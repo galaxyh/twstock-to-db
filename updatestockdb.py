@@ -6,6 +6,8 @@ import datetime
 import stockconfig
 import MySQLdb as mdb
 
+MAX_ID_LENGTH = 10
+
 p = stockconfig.load()
 lastupdatedb = p['listed.lastUpdateDb'].strip().split('-')
 listedlast = datetime.date(int(lastupdatedb[0]), int(lastupdatedb[1]), int(lastupdatedb[2])) + datetime.timedelta(1)
@@ -37,7 +39,9 @@ with con:
                 for row in reader:
                     if len(row) != 16: # Skip illegal rows
                         continue
-                    if row[0].decode('big5').encode('utf8').strip() == '證券代號': # Skip header
+
+                    firstcol = row[0].decode('big5').encode('utf8').strip();
+                    if (firstcol == '證券代號') or (len(firstcol) > MAX_ID_LENGTH): # Skip header
                         continue
 
                     stockid = row[0].decode('big5').replace('"', '').replace('=', '')
@@ -62,7 +66,9 @@ with con:
                 for row in reader:
                     if len(row) != 9: # Skip illegal rows
                         continue
-                    if row[0].decode('big5').encode('utf8').strip() == '證券代號': # Skip header
+                    
+                    firstcol = row[0].decode('big5').encode('utf8').strip();
+                    if (firstcol == '證券代號') or (len(firstcol) > MAX_ID_LENGTH): # Skip header
                         continue
                     
                     stockid = row[0].decode('big5').replace('"', '').replace('=', '')
@@ -92,7 +98,9 @@ with con:
                 for row in reader:
                     if len(row) != 17: # Skip illegal rows
                         continue
-                    if row[0].decode('big5').encode('utf8').strip() == '代號': # Skip header
+                    
+                    firstcol = row[0].decode('big5').encode('utf8').strip();
+                    if (firstcol == '代號') or (len(firstcol) > MAX_ID_LENGTH): # Skip header
                         continue
                     
                     stockid = row[0].strip()
@@ -116,7 +124,9 @@ with con:
                 for row in reader:
                     if len(row) != 12: # Skip illegal rows
                         continue
-                    if row[0].decode('big5').encode('utf8').strip() == '代號': # Skip header
+                    
+                    firstcol = row[0].decode('big5').encode('utf8').strip();
+                    if (firstcol == '代號') or (len(firstcol) > MAX_ID_LENGTH): # Skip header
                         continue
                     
                     stockid = row[0].strip()
