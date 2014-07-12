@@ -57,3 +57,6 @@ price_listed/
 price_otc/
 inst_listed/
 inst_otc/
+
+# twstock data archive
+data_*.zip
