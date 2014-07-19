@@ -9,10 +9,10 @@ import MySQLdb as mdb
 MAX_ID_LENGTH = 10
 
 p = stockconfig.load()
-lastupdatedb = p['listed.lastUpdateDb'].strip().split('-')
-listedlast = datetime.date(int(lastupdatedb[0]), int(lastupdatedb[1]), int(lastupdatedb[2])) + datetime.timedelta(1)
-lastupdatedb = p['otc.lastUpdateDb'].strip().split('-')
-otclast = datetime.date(int(lastupdatedb[0]), int(lastupdatedb[1]), int(lastupdatedb[2])) + datetime.timedelta(1)
+lastupdate = p['listed.lastUpdateDb'].strip().split('-')
+listedlast = datetime.date(int(lastupdate[0]), int(lastupdate[1]), int(lastupdate[2])) + datetime.timedelta(1)
+lastupdate = p['otc.lastUpdateDb'].strip().split('-')
+otclast = datetime.date(int(lastupdate[0]), int(lastupdate[1]), int(lastupdate[2])) + datetime.timedelta(1)
 
 print '[START] Updating stock data...'
 if p['listed.isUpdateDb'] == 'false':
@@ -45,7 +45,6 @@ with con:
                         continue
 
                     stockid = row[0].decode('big5').replace('"', '').replace('=', '')
-                    stocktype = 'L' # Listed companies
                     popen = row[5].strip().replace(',', '')
                     if popen[1] == '-': # Ignore records with price equals to '--'
                         continue
@@ -54,11 +53,11 @@ with con:
                     pclose = row[8].strip().replace(',', '')
                     vol = row[2].strip().replace(',', '')
                     per = row[15].strip().replace(',','')
-                    cur.execute('INSERT INTO DAILY_TRADE (ID,TRADE_DATE,TYPE,OPEN,HIGH,LOW,CLOSE,VOL,PER) ' +
+                    cur.execute('INSERT INTO DAILY_TRADE (ID,TYPE,TRADE_DATE,OPEN,HIGH,LOW,CLOSE,VOL,PER) ' +
                                 'VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) ON DUPLICATE KEY UPDATE ' +
                                 'TYPE=%s,OPEN=%s,HIGH=%s,LOW=%s,CLOSE=%s,VOL=%s,PER=%s;',
-                                (stockid, tradedate, stocktype, popen, phigh, plow, pclose, vol, per,
-                                stocktype, popen, phigh, plow, pclose, vol, per));
+                                (stockid, 'L', tradedate, popen, phigh, plow, pclose, vol, per,
+                                'L', popen, phigh, plow, pclose, vol, per));
             
             # Update institution net buy data
             with open(p['listed.instPath'] + '/' + tradedate + '.csv', 'r') as f:
@@ -102,9 +101,11 @@ with con:
                     firstcol = row[0].decode('big5').encode('utf8').strip();
                     if (firstcol == '代號') or (len(firstcol) > MAX_ID_LENGTH): # Skip header
                         continue
-                    
+
                     stockid = row[0].strip()
-                    stocktype = 'O' # Over the Counter companies
+                    if len(stockid) > 4: # Skip warrant
+                        continue
+
                     popen = row[4].strip().replace(',', '')
                     if popen[1] == '-': # Ignore records with price equals to '---'
                         continue
@@ -112,11 +113,11 @@ with con:
                     plow = row[6].strip().replace(',', '')
                     pclose = row[2].strip().replace(',', '')
                     vol = row[8].strip().replace(',', '')
-                    cur.execute('INSERT INTO DAILY_TRADE (ID,TRADE_DATE,TYPE,OPEN,HIGH,LOW,CLOSE,VOL) ' +
+                    cur.execute('INSERT INTO DAILY_TRADE (ID,TYPE,TRADE_DATE,OPEN,HIGH,LOW,CLOSE,VOL) ' +
                                 'VALUES (%s,%s,%s,%s,%s,%s,%s,%s) ON DUPLICATE KEY UPDATE ' +
                                 'TYPE=%s,OPEN=%s,HIGH=%s,LOW=%s,CLOSE=%s,VOL=%s;',
-                                (stockid, tradedate, stocktype, popen, phigh, plow, pclose, vol,
-                                stocktype, popen, phigh, plow, pclose, vol));
+                                (stockid, 'O', tradedate, popen, phigh, plow, pclose, vol,
+                                'O', popen, phigh, plow, pclose, vol));
 
             # Update institution net buy data
             with open(p['otc.instPath'] + '/' + tradedate + '.csv', 'r') as f:

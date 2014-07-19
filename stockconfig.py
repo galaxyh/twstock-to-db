@@ -32,6 +32,11 @@ def load(filename=DEFAULT_CONFIG_FILENAME):
         p['listed.lastUpdateDb'] = DEFAULT_START_DATE
     if p['listed.isUpdateDb'].strip() != 'false':
         p['listed.isUpdateDb'] = 'true'
+    
+    if not p['listed.lastUpdateIdx'].strip():
+        p['listed.lastUpdateIdx'] = DEFAULT_START_DATE
+    if p['listed.isUpdateIdx'].strip() != 'false':
+        p['listed.isUpdateIdx'] = 'true'
 
     if not p['otc.pricePath'].strip():
         p['otc.pricePath'] = DEFAULT_OTC_PRICE_PATH
@@ -47,6 +52,11 @@ def load(filename=DEFAULT_CONFIG_FILENAME):
         p['otc.lastUpdateDb'] = DEFAULT_START_DATE
     if p['otc.isUpdateDb'].strip() !='false':
         p['otc.isUpdateDb'] = 'true'
+    
+    if not p['otc.lastUpdateIdx'].strip():
+        p['otc.lastUpdateIdx'] = DEFAULT_START_DATE
+    if p['otc.isUpdateIdx'].strip() !='false':
+        p['otc.isUpdateIdx'] = 'true'
 
     if not p['db.server'].strip():
         p['db.server'] = 'SERVER_NAME'
